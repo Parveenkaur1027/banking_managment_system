@@ -62,23 +62,48 @@ class SavingsAccount(BankAccount):
         self.__account_balance += interest
 
 
-# Example usage
-account1 = BankAccount("123456", "John Smith", 1000)
-account2 = BankAccount("654321", "Jane Doe", 500)
+def create_account():
+    account_number = input("Enter account number: ")
+    account_holder_name = input("Enter account holder name: ")
+    account_balance = float(input("Enter account balance: "))
+    account_type = input("Enter account type (1 for savings, 2 for current): ")
+    if account_type == "1":
+        interest_rate = float(input("Enter interest rate: "))
+        minimum_balance = float(input("Enter minimum balance: "))
+        account = SavingsAccount(account_number, account_holder_name, account_balance, interest_rate, minimum_balance)
+    else:
+        account = BankAccount(account_number, account_holder_name, account_balance)
 
-# deposit
-account1.deposit(500)
-print(account1.get_account_balance())
+    accounts.append(account)
+    print("Account created successfully")
 
-# withdraw
-account1.withdraw(200)
-print(account1.get_account_balance())
 
-# transfer
-account1.transfer(300, account2)
-print(account1.get_account_balance())
-print(account2.get_account_balance())
+def display_account_details(account):
+    print("Account Number: ", account.get_account_number())
+    print("Account Holder Name: ", account.get_account_holder_name())
+    print("Account Balance: ", account.get_account_balance())
 
-# savings account
-savings_account = SavingsAccount("789123", "Alice Jones", 5000, 1.5, 1000)
-savings_account
+
+# Main Menu
+accounts = []
+
+while True:
+    print("\n\n1. Create Account")
+    print("2. Deposit")
+    print("3. Withdraw")
+    print("4. Transfer")
+    print("5. View Account Details")
+    print("6. Exit")
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        create_account()
+    elif choice == "2":
+        account_number = input("Enter account number: ")
+        account = next((acc for acc in accounts if acc.get_account_number() == account_number), None)
+        if account:
+            amount = float(input("Enter deposit amount: "))
+            account.deposit(amount)
+            print("Deposit successful")
+        else:
+            print("Deposit failed")
