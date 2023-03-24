@@ -1,80 +1,83 @@
 import tkinter as tk
+from bank import Bank, Account
 
-class BankingSystemGUI:
-    def __init__(self, master):
-        self.master = master
-        self.master.title("Banking System")
-
-        # Create main page
-        self.main_frame = tk.Frame(self.master, width=500, height=500)
-        self.main_frame.pack()
-
-        self.create_buttons()
-
-        # Create second page
-        self.second_frame = tk.Frame(self.master, width=500, height=500)
-        self.create_second_page()
-
-    def create_buttons(self):
-        create_acc_btn = tk.Button(self.main_frame, text="Create Account", command=self.create_account)
-        create_acc_btn.pack(pady=10)
-
-        withdraw_btn = tk.Button(self.main_frame, text="Withdraw Cash", command=self.withdraw_cash)
-        withdraw_btn.pack(pady=10)
-
-        deposit_btn = tk.Button(self.main_frame, text="Deposit Cash", command=self.deposit_cash)
-        deposit_btn.pack(pady=10)
-
-        transfer_btn = tk.Button(self.main_frame, text="Transfer", command=self.transfer)
-        transfer_btn.pack(pady=10)
-
-        view_btn = tk.Button(self.main_frame, text="View Account Detail", command=self.view_account_detail)
-        view_btn.pack(pady=10)
-
-    def create_second_page(self):
-        # Create a label and an entry field for the account number
-        acc_num_label = tk.Label(self.second_frame, text="Account Number:")
-        acc_num_label.pack(pady=10)
-
-        acc_num_entry = tk.Entry(self.second_frame)
-        acc_num_entry.pack(pady=10)
-
-        # Create a label and an entry field for the amount to be transferred
-        amount_label = tk.Label(self.second_frame, text="Amount:")
-        amount_label.pack(pady=10)
-
-        amount_entry = tk.Entry(self.second_frame)
-        amount_entry.pack(pady=10)
-
-        # Create a button for the transfer function
-        transfer_btn = tk.Button(self.second_frame, text="Transfer", command=self.transfer_funds)
-        transfer_btn.pack(pady=10)
+class BankGUI(tk.Tk):
+    def __init__(self, bank):
+        super().__init__()
+        self.bank = bank
+        self.title("Banking System")
+        self.geometry("500x300")
+        
+        # create main menu frame
+        self.menu_frame = tk.Frame(self)
+        self.menu_frame.pack(pady=20)
+        
+        # create basic function buttons
+        tk.Button(self.menu_frame, text="Create Account", width=20, height=2, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.create_account_page, relief=tk.FLAT).grid(row=0, column=0, padx=10, pady=10)
+        tk.Button(self.menu_frame, text="Deposit", width=20, height=2, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.deposit_page, relief=tk.FLAT).grid(row=0, column=1, padx=10, pady=10)
+        tk.Button(self.menu_frame, text="Withdraw", width=20, height=2, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.withdraw_page, relief=tk.FLAT).grid(row=0, column=2, padx=10, pady=10)
+        tk.Button(self.menu_frame, text="Transfer", width=20, height=2, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.transfer_page, relief=tk.FLAT).grid(row=1, column=0, padx=10, pady=10)
+        tk.Button(self.menu_frame, text="View Account", width=20, height=2, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.view_account_page, relief=tk.FLAT).grid(row=1, column=1, padx=10, pady=10)
+        tk.Button(self.menu_frame, text="Exit", width=20, height=2, font=('Arial', 12), bg='#ff6666', fg='white', command=self.quit, relief=tk.FLAT).grid(row=1, column=2, padx=10, pady=10)
+        
+        # create container frame for pages
+        self.container = tk.Frame(self)
+        self.container.pack(fill=tk.BOTH, expand=True)
+        
+        # create initial page
+        # self.create_account_page()
+        
+    def create_account_page(self):
+    # clear container frame
+        self.create_account_window = tk.Toplevel(self)
+        self.create_account_window.title("Create Account")
+        
+        # create form for creating a new account
+        tk.Label(self.create_account_window, text="Create Account").pack(pady=10)
+        tk.Label(self.create_account_window, text="Name").pack()
+        self.name_entry = tk.Entry(self.create_account_window)
+        self.name_entry.pack(pady=5)
+        tk.Label(self.create_account_window, text="Initial Balance").pack()
+        self.balance_entry = tk.Entry(self.create_account_window)
+        self.balance_entry.pack(pady=5)
+        tk.Button(self.create_account_window, text="Create", command=self.create_account).pack(pady=10)
+        tk.Button(self.create_account_window, text="Back", command=self.create_account_window.destroy).pack(pady=10)
+        
 
     def create_account(self):
-        # TODO: Implement create account functionality
+        name = self.name_entry.get().strip()
+        balance_str = self.balance_entry.get().strip()
+        if not name:
+            tk.messagebox.showerror("Error", "Name cannot be empty")
+            return
+        try:
+            balance = float(balance_str)
+        except ValueError:
+            tk.messagebox.showerror("Error", "Balance must be a number")
+            return
+        account = self.bank.create_account(name, balance)
+        self.account_label.config(text=f"Account {account.id} created for {account.name} with balance {account.balance:.2f}")
+        self.name_entry.delete(0, tk.END)
+        self.balance_entry.delete(0, tk.END)
+
+        
+    def deposit_page(self):
+        # implementation of deposit page
         pass
-
-    def withdraw_cash(self):
-        # TODO: Implement withdraw cash functionality
+    
+    def withdraw_page(self):
+        # implementation of withdraw page
         pass
-
-    def deposit_cash(self):
-        # TODO: Implement deposit cash functionality
+    
+    def transfer_page(self):
+        # implementation of transfer page
         pass
-
-    def transfer(self):
-        self.main_frame.pack_forget()
-        self.second_frame.pack()
-
-    def transfer_funds(self):
-        # TODO: Implement transfer funds functionality
+    
+    def view_account_page(self):
+        # implementation of view account page
         pass
-
-    def view_account_detail(self):
-        # TODO: Implement view account detail functionality
-        pass
-
-if __name__ == '__main__':
-    root = tk.Tk()
-    app = BankingSystemGUI(root)
-    root.mainloop()
+    
+if __name__ == "__main__":
+    bank = Bank()
+    gui = BankGUI(bank)
+    gui.mainloop()
