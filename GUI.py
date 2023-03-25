@@ -4,7 +4,7 @@ from bank import Bank, Account
 class CreateAccountPage(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("View account")
+        self.title("Create new account")
         self.geometry("350x300")
         self.bank = parent.bank
         
@@ -13,6 +13,9 @@ class CreateAccountPage(tk.Toplevel):
         tk.Label(self, text="Name").pack()
         self.name_entry = tk.Entry(self)
         self.name_entry.pack(pady=7)
+        tk.Label(self, text="Set password").pack()
+        self.balance_entry = tk.Entry(self)
+        self.balance_entry.pack(pady=7)
         tk.Label(self, text="Initial Balance").pack()
         self.balance_entry = tk.Entry(self)
         self.balance_entry.pack(pady=7)
@@ -44,15 +47,17 @@ class ViewAccountPage(tk.Toplevel):
         self.geometry("350x300")
         self.bank = parent.bank
 
-        tk.Label(self, text="Sender id:").grid(row=0, column=0)
+        tk.Label(self, text="Account id:").grid(row=0, column=0, padx=5, pady=5)
         self.recipient_entry = tk.Entry(self)
         self.recipient_entry.grid(row=0, column=1)
-        tk.Label(self, text="Sender password:").grid(row=1, column=0)
+        tk.Label(self, text="Account password:").grid(row=1, column=0, padx=5, pady=5)
         self.amount_entry = tk.Entry(self)
-        self.amount_entry.grid(row=1, column=1)
+        self.amount_entry.grid(row=1, column=1, padx=5, pady=5)
         
         # Close button
-        tk.Button(self, text="Close", width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.destroy).grid(row=3, column=0, columnspan=2)
+        tk.Button(self, text="Open", width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.destroy).grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+
+        tk.Button(self, text="Back", width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.destroy).grid(row=4, column=0, columnspan=2, padx=10, pady=10)
         
         # if account is None:
         #     tk.messagebox.showerror("Error", f"Account with ID {id} does not exist")
@@ -73,22 +78,23 @@ class TransferPage(tk.Toplevel):
         # Account information labels
         tk.Label(self, text="Sender id:").grid(row=0, column=0)
         self.recipient_entry = tk.Entry(self)
-        self.recipient_entry.grid(row=0, column=1)
-        tk.Label(self, text="Sender password:").grid(row=1, column=0)
+        self.recipient_entry.grid(row=0, column=1, padx=5, pady=5)
+        tk.Label(self, text="Sender password:").grid(row=1, column=0, padx=5, pady=5)
         self.amount_entry = tk.Entry(self)
-        self.amount_entry.grid(row=1, column=1)
+        self.amount_entry.grid(row=1, column=1, padx=5, pady=5)
         
         # Transfer form labels and inputs
-        tk.Label(self, text="Recipient id:").grid(row=3, column=0)
+        tk.Label(self, text="Recipient id:").grid(row=3, column=0, padx=5, pady=5)
         self.recipient_entry = tk.Entry(self)
-        self.recipient_entry.grid(row=3, column=1)
-        tk.Label(self, text="Transfer amount:").grid(row=4, column=0)
+        self.recipient_entry.grid(row=3, column=1, padx=5, pady=5)
+        tk.Label(self, text="Transfer amount:").grid(row=4, column=0, padx=5, pady=5)
         self.amount_entry = tk.Entry(self)
-        self.amount_entry.grid(row=4, column=1)
+        self.amount_entry.grid(row=4, column=1, padx=5, pady=5)
         
         # Transfer button
-        tk.Button(self, text="Transfer",  width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.transfer).grid(row=5, column=0, columnspan=2)
-        
+        tk.Button(self, text="Transfer",  width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.transfer).grid(row=5, column=0, columnspan=2, padx=10, pady=5)
+        tk.Button(self, text="Back", width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.destroy).grid(row=6, column=0, columnspan=2, padx=10, pady=5)
+
         
     def transfer(self):
         recipient_name = self.recipient_entry.get()
@@ -117,8 +123,10 @@ class DepositPage(tk.Toplevel):
         tk.Label(self, text="Amount").pack()
         self.amount_entry = tk.Entry(self)
         self.amount_entry.pack(pady=5)
+
         tk.Button(self, text="Deposit", width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.deposit).pack(pady=10)
-        
+        tk.Button(self, text="Back", width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.destroy).pack(pady=10)
+
     def deposit(self):
         id = int(self.id_entry.get())
         amount = float(self.amount_entry.get())
@@ -148,6 +156,8 @@ class WithdrawPage(tk.Toplevel):
 
         # create withdraw button
         tk.Button(self, text="Withdraw", width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.withdraw).pack(pady=10)
+        tk.Button(self, text="Back", width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.destroy).pack(pady=10)
+
 
     def withdraw(self):
         # get account ID and amount
@@ -167,7 +177,7 @@ class BankGUI(tk.Tk):
         super().__init__()
         self.bank = bank
         self.title("Banking System")
-        self.geometry("1000x800")
+        self.geometry("800x600")
         
         # create main menu frame
         self.menu_frame = tk.Frame(self)
