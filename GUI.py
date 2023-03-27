@@ -1,9 +1,12 @@
 import tkinter as tk
+from tkinter import messagebox
 from bank import Bank, Account
 
 class CreateAccountPage(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
+        # create account label
+        
         self.title("Create new account")
         self.geometry("350x300")
         self.bank = parent.bank
@@ -13,9 +16,11 @@ class CreateAccountPage(tk.Toplevel):
         tk.Label(self, text="Name").pack()
         self.name_entry = tk.Entry(self)
         self.name_entry.pack(pady=7)
+
         tk.Label(self, text="Set password").pack()
         self.balance_entry = tk.Entry(self)
         self.balance_entry.pack(pady=7)
+
         tk.Label(self, text="Initial Balance").pack()
         self.balance_entry = tk.Entry(self)
         self.balance_entry.pack(pady=7)
@@ -28,17 +33,17 @@ class CreateAccountPage(tk.Toplevel):
         name = self.name_entry.get().strip()
         balance_str = self.balance_entry.get().strip()
         if not name:
-            tk.messagebox.showerror("Error", "Name cannot be empty")
+            messagebox.showerror("Error", "Name cannot be empty")
             return
         try:
             balance = float(balance_str)
         except ValueError:
-            tk.messagebox.showerror("Error", "Balance must be a number")
+            messagebox.showerror("Error", "Balance must be a number")
             return
         account = self.bank.create_account(name, balance)
-        self.account_label.config(text=f"Account {account.id} created for {account.name} with balance {account.balance:.2f}")
-        self.name_entry.delete(0, tk.END)
-        self.balance_entry.delete(0, tk.END)
+        
+        tk.messagebox.showinfo("Account info", f"Account with details {account} created ")
+        
 
 class ViewAccountPage(tk.Toplevel):
     def __init__(self, parent):
@@ -48,22 +53,28 @@ class ViewAccountPage(tk.Toplevel):
         self.bank = parent.bank
 
         tk.Label(self, text="Account id:").grid(row=0, column=0, padx=5, pady=5)
-        self.recipient_entry = tk.Entry(self)
-        self.recipient_entry.grid(row=0, column=1)
+        self.account_entry = tk.Entry(self)
+        self.account_entry.grid(row=0, column=1)
+
         tk.Label(self, text="Account password:").grid(row=1, column=0, padx=5, pady=5)
-        self.amount_entry = tk.Entry(self)
-        self.amount_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.password_entry = tk.Entry(self)
+        self.password_entry.grid(row=1, column=1, padx=5, pady=5)
         
         # Close button
-        tk.Button(self, text="Open", width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.destroy).grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+        tk.Button(self, text="Open", width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.view_account).grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
         tk.Button(self, text="Back", width=15, height=1, font=('Arial', 12), bg='#66c2ff', fg='white', command=self.destroy).grid(row=4, column=0, columnspan=2, padx=10, pady=10)
-        
-        # if account is None:
-        #     tk.messagebox.showerror("Error", f"Account with ID {id} does not exist")
-        # else:
-        #     account.deposit(amount)
-        #     tk.messagebox.showinfo("Deposit Successful", f"Deposited {amount} into account {account.id}. New balance is {account.balance}")
+    
+    def view_account(self):
+        account_id = self.account_entry.get().strip()
+       
+        account = self.bank.get_account(int(account_id))
+        print(account)
+        if account is None:
+            tk.messagebox.showerror("Error", f"Account with ID {account_id} does not exist")
+        else:
+            
+            tk.messagebox.showinfo("Accunt details", f" {account} ")
         #     self.destroy()
         # self.transient(master)
         # self.grab_set()
@@ -77,8 +88,8 @@ class TransferPage(tk.Toplevel):
         self.bank = parent.bank
         # Account information labels
         tk.Label(self, text="Sender id:").grid(row=0, column=0)
-        self.recipient_entry = tk.Entry(self)
-        self.recipient_entry.grid(row=0, column=1, padx=5, pady=5)
+        self.sender_entry = tk.Entry(self)
+        self.sender_entry.grid(row=0, column=1, padx=5, pady=5)
         tk.Label(self, text="Sender password:").grid(row=1, column=0, padx=5, pady=5)
         self.amount_entry = tk.Entry(self)
         self.amount_entry.grid(row=1, column=1, padx=5, pady=5)
@@ -97,15 +108,23 @@ class TransferPage(tk.Toplevel):
 
         
     def transfer(self):
-        recipient_name = self.recipient_entry.get()
+        account1_id = self.sender_entry.get()
+        account2_id = self.recipient_entry.get()
+
+        account1 = self.bank.get_account(int(account1_id))
+        account2 = self.bank.get_account(int(account2_id))
         amount = float(self.amount_entry.get())
-        try:
-            account.withdraw(amount)
-            print(f"Withdrawal of {amount} successful. New balance is {account.get_balance()}.")
-            print(f"Funds transferred to {recipient_name}.")
-            self.destroy()
-        except ValueError as e:
-            print(str(e))
+
+        if account1 and account2:
+            try:
+                self.bank.transfer(account1_id, account2_id, amount)
+                tk.messagebox.showinfo("Fund transfer",f"Fund transfer of {amount} successful.Funds transferred to {account2_id}.")
+                
+                self.destroy()
+            except ValueError as e:
+                print(str(e))
+        else:
+            tk.messagebox.showerror("Error", f"Enter valid account")
 
 
 class DepositPage(tk.Toplevel):
@@ -130,12 +149,12 @@ class DepositPage(tk.Toplevel):
     def deposit(self):
         id = int(self.id_entry.get())
         amount = float(self.amount_entry.get())
-        account = self.bank.get_account_by_id(id)
+        account = self.bank.get_account(id)
         if account is None:
             tk.messagebox.showerror("Error", f"Account with ID {id} does not exist")
         else:
-            account.deposit(amount)
-            tk.messagebox.showinfo("Deposit Successful", f"Deposited {amount} into account {account.id}. New balance is {account.balance}")
+            self.bank.deposit(id,amount)
+            tk.messagebox.showinfo("Deposit Successful", f"Deposited {amount} into account {id}.")
             self.destroy()
 
 class WithdrawPage(tk.Toplevel):
